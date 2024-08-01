@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenSeaDragon.Annotator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+    <script src="{{ url_for('static', filename='js/base.js') }}" defer></script>
+    {% block css %}
+        {% block style %}{% endblock style %}
+    {% endblock css %}
+    {% block js %}{% endblock js %}
+</head>
+<body>
+    <header class="header-container">
+        <a href="/"><h2 class="header-title">Dronomy Web</h2></a>
+        <nav class="navigation-container">
+            <ul>
+                <li><a href="/login" class="link">Sign In</a></li>
+                <li><a href="/register" class="link">Sign Up</a></li>
+                <li><a href="/profile" class="link">Profile</a></li>
+                <li><a href="/viewer" class="link">Viewer</a></li>
+                <li><a href="/logout" class="link">Sign Out</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    {% block body_content %}{% endblock body_content %}
+
+</body>
+</html>

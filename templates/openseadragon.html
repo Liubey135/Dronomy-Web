@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/openseadragon.css') }}">
+
+{% block style %}
+<style>
+    #openSeaDragon {
+        width: 800px;
+        height: 600px;
+        border: 1px solid grey;
+    }
+    .a9s-annotationlayer {
+        pointer-events: none;
+    }
+</style>
+{% endblock style %}
+{% endblock css %}
+
+{% block body_content %}
+<h1>OpenSeadragon Viewer</h1>
+<div id="openSeaDragon"></div>
+<div>
+    <button id="zoom-in">Zoom In</button>
+    <button id="zoom-out">Zoom Out</button>
+    <button id="home">Home</button>
+    <button id="create-annotation">Create Annotation</button>
+    <button id="update-annotation">Update Annotation</button>
+    <button id="delete-annotation">Delete Annotation</button>
+</div>
+{% endblock body_content %}
+
+{% block js %}
+<script src="{{ url_for('static', filename='js/openseadragon.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/openseadragon-annotorious.min.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Initialize OpenSeadragon viewer
+    const viewer = OpenSeadragon({
+        id: "openSeaDragon",
+        tileSources: {
+            "Image": {
+                "xmlns": "http://schemas.microsoft.com/deepzoom/2008",
+                "Url": "{{ url_for('static', filename='test_images/dzi/testpattern_files/') }}",
+                "Format": "jpg",
+                "Overlap": "1",
+                "TileSize": "254",
+                "Size": {
+                    "Height": "1000",
+                    "Width": "1000"
+                }
+            }
+        },
+        debug: true,
+        showNavigator: true,
+        animationTime: 0.5,
+        blendTime: 0.1,
+        constrainDuringPan: true,
+        maxZoomPixelRatio: 2,
+        minZoomLevel: 1,
+        visibilityRatio: 1,
+        zoomPerScroll: 1.2,
+        gestureSettingsMouse: { clickToZoom: false }
+    });
+
+    // Event listeners for buttons
+    document.getElementById("zoom-in").addEventListener("click", function() {
+        viewer.viewport.zoomBy(1.2);
+        viewer.viewport.applyConstraints();
+    });
+
+    document.getElementById("zoom-out").addEventListener("click", function() {
+        viewer.viewport.zoomBy(0.8);
+        viewer.viewport.applyConstraints();
+    });
+
+    document.getElementById("home").addEventListener("click", function() {
+        viewer.viewport.goHome();
+    });
+});
+</script>
+{% endblock js %}
