@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", function() {
-    // Initialize the OpenSeadragon viewer
     const viewer = OpenSeadragon({
         id: "openSeaDragon",
         tileSources: {
@@ -41,4 +40,11 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("home").addEventListener("click", function() {
         viewer.viewport.goHome();
     });
+
+    document.getElementById("full-page").addEventListener("click", function() {
+        viewer.setFullPage(!viewer.isFullPage());
+    });
+
+    // Make viewer globally accessible for annotorious.js
+    window.viewer = viewer;
 });

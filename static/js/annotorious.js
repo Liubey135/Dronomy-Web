@@ -1,34 +1,27 @@
-document.addEventListener("DOMContentLoaded", function() {
-    // Initialize the OpenSeadragon viewer
-    const viewer = OpenSeadragon({
-        id: "openSeaDragon",
-        tileSources: {
-            Image: {
-                xmlns: "http://schemas.microsoft.com/deepzoom/2008",
-                Url: "{{ url_for('static', filename='test_images/dzi/testpattern_files/') }}",
-                Format: "jpg",
-                Overlap: "1",
-                TileSize: "254",
-                Size: {
-                    Height: "1000",
-                    Width: "1000"
-                }
-            }
-        },
-        prefixUrl: "{{ url_for('static', filename='images/') }}",
-        showNavigator: true,
-        animationTime: 0.5,
-        blendTime: 0.1,
-        constrainDuringPan: true,
-        maxZoomPixelRatio: 2,
-        minZoomLevel: 1,
-        visibilityRatio: 1,
-        zoomPerScroll: 1.2,
-        gestureSettingsMouse: { clickToZoom: false }
-    });
+document.addEventListener("viewerInitialized", function(event) {
+    const viewer = event.detail.viewer;
 
     // Initialize Annotorious
-    const anno = OpenSeadragon.Annotorious(viewer);
+    const anno = OpenSeadragon.Annotorious(viewer, {
+        disableEditor: true,
+        allowEmpty: true
+    });
+
+    // Function to convert annotations if needed
+    function convertFromAnnotorious(annotation, imageDimensions) {
+        const coordinates = annotation.target.selector.value.split(':')[1].split(',').map(value => parseInt(value));
+        const x = Math.max(coordinates[0], 0);
+        const y = Math.max(coordinates[1], 0);
+        const w = Math.min(coordinates[2], imageDimensions.width - x);
+        const h = Math.min(coordinates[3], imageDimensions.height - y);
+
+        if (w <= 0 || h <= 0) return null;
+
+        return {
+            id: annotation.id.replace('#', ''),
+            coordinates: { x, y, w, h }
+        };
+    }
 
     // Event listeners for annotation buttons
     document.getElementById("create-annotation").addEventListener("click", function() {
@@ -36,18 +29,8 @@ document.addEventListener("DOMContentLoaded", function() {
             "@context": "http://www.w3.org/ns/anno.jsonld",
             "id": "example-annotation",
             "type": "Annotation",
-            "body": {
-                "type": "TextualBody",
-                "value": "Example Annotation",
-                "format": "text/plain"
-            },
-            "target": {
-                "selector": {
-                    "type": "FragmentSelector",
-                    "conformsTo": "http://www.w3.org/TR/media-frags/",
-                    "value": "xywh=pixel:100,100,300,300"
-                }
-            }
+            "body": { "type": "TextualBody", "value": "Example Annotation", "format": "text/plain" },
+            "target": { "selector": { "type": "FragmentSelector", "conformsTo": "http://www.w3.org/TR/media-frags/", "value": "xywh=pixel:100,100,300,300" } }
         });
         console.log("Annotation created:", annotation);
     });
